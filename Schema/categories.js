@@ -10,9 +10,7 @@ const categorySchema = new mongoose.Schema({
            type: mongoose.Schema.Types.ObjectId,
            ref: 'Category'
          },
-  Product: {
-    type: mongoose.Schema.Types.ObjectId
-  }
+
 })
 var Category = mongoose.model('Category', categorySchema)
 module.exports = { Category }

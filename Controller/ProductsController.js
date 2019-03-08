@@ -4,6 +4,7 @@
 const { Product } = require('../Schema/products')
 const { Response } = require('../utils/response')
 const { ErrorHandler } = require('../utils/errorhandler')
+// const {Category}= require('../Schema/categories')
 const mongoose = require('mongoose')
 class ProductController {
   /**
@@ -82,20 +83,21 @@ class ProductController {
                             as: 'Category'
                           }
           },
-          { '$unwind': '$Category' },
+          { $unwind: '$Category' },
           {
             $lookup:
                           {
                             from: 'categories',
-                            localField: 'ParentCategoryId',
+                            localField: 'Category.ParentCategoryId',
                             foreignField: '_id',
                             as: 'ParentCategory'
                           }
-          }
+          },
+          { $unwind: '$ParentCategory' }
         ]).exec((err, data) => {
         console.log(id)
         if (err) throw err
-        return new Response(res, { Product: data }, 'Product is shown')
+        return new Response(res, 'Product is shown', { Product: data })
       })
     } catch (error) {
       ErrorHandler.sendError(res, error)
