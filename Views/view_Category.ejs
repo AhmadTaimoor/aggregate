@@ -1,0 +1,40 @@
+<html>
+    <head>
+    <Title>Categories</Title>
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+      th, td {
+        padding: 5px;
+        text-align: left;
+      }
+    </style>
+</head>
+<body>
+    
+<h2>Categories</h2>
+<p>All the Categories with their id,name and Parent categories</p>
+
+    <table id="table" style="width:100%">  
+        <thead>  
+            <tr aria-rowspan="2">  
+                <th>id</th>  
+                <th>Name</th>
+                <th>ParentCategory-ID</th>
+            </tr>  
+        </thead>  
+         <tbody>  
+                <% data.forEach(function(data){ %>
+                    <tr>  
+                        <td><%=data._id %></td>  
+                        <td><%=data.name%></td>
+                        <td><%=data.ParentCategoryId%></td>
+                    </tr>                                    
+                  <% })%>
+         </tbody>
+    </table>
+</body>
+
+</html>

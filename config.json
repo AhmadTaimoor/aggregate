@@ -1,0 +1,5 @@
+{
+"PORT":4000,
+"MONGO_CONNECTION":"mongodb+srv://At-S:123@mongo1-bnjqi.mongodb.net/Pipeline?retryWrites=true"
+
+}
