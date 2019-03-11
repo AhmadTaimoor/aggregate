@@ -4,9 +4,12 @@
 const { Category } = require('../Schema/categories')
 const { Response } = require('../utils/response')
 const { ErrorHandler } = require('../utils/errorhandler')
-const mongoose = require('mongoose')
-var ejs = require('../utils/ejs')
-var pdf = require('../utils/pdf')
+const { mongoose } = require('mongoose')
+const { Json2csvParser } = require('json2csv').Parser
+const { ejs } = require('../utils/ejs')
+const { pdf } = require('../utils/pdf')
+const { fs } = require('fs')
+const { mongoXlsx } = require('mongo-xlsx')
 
 class CategoryController {
   /**
@@ -28,11 +31,8 @@ class CategoryController {
       let name = req.body.name
       let ParentCategoryId = req.body.ParentCategoryId
       if (name == null) { throw { code: 400, message: 'Name is required' } }
-      // let ParentCategories=new Category({ParentCategoryId:ParentCategoryId})
-
       let category = new Category({ name: name, ParentCategoryId: ParentCategoryId })
       await category.save()
-      // return new Response(res,{data:category,message:'Category saved successfully'});
       return new Response(res, { Category: category }, 'Category saved successfully')
     } catch (error) {
       ErrorHandler.sendError(res, error)
@@ -50,15 +50,12 @@ class CategoryController {
 //         *      res.send
 //         *      res.status
 //         */
-  static async showCategory (req, res) {
+  static async getpdf (req, res) {
     try {
       await Category.find((_err, data) =>
-      // new Response(res, { data,message: 'Category retreived successfully' }))
-      // res.render('../Views/view_Category.ejs',{data:data}))
         ejs.toHTML('./Views/view_Category.ejs', { data: data }).then(function (html) {
           var options = { format: 'Letter' }
           var output = './pdf/' + 'Category' + '.pdf'
-
           pdf.toPDF(html, options, output).then(function (response) {
             console.log('PDF file successfully written')
             console.log(response)
@@ -71,10 +68,50 @@ class CategoryController {
       ErrorHandler.sendError(res, error)
     }
   }
+  //* *****************************************Getting CSV data&******************/
+  static async getCsvdata (req, res) {
+    try {
+      await Category.find((_err, data) => {
+        var fieldNames = ['_id', 'name', 'ParentCategoryId']
+        const json2csvParser = new Json2csvParser({ fieldNames, unwind: 'data' })
+        var resp = './pdf/Category_csv_' + new Date().getTime() + '.csv'
+        const csv = json2csvParser.parse({ data })
+        fs.writeFile(resp, csv, (err) => {
+          if (!err) {
+            console.log('written successfully')
+            console.log('FilePath :' + resp)
+          } else { console.log(err) }
+        })
+      })
+    } catch (error) {
+      ErrorHandler.sendError(res, error)
+    }
+  }
+  //* *****************************************Get Xslx Data&******************/
+  static async getXslxdata (req, res) {
+    try {
+      await Category.find((_err, data) => {
+        var model = mongoXlsx.buildDynamicModel(data)
+        var options = {
+          save: true,
+          sheetName: [],
+          fileName: 'Category_xlsx_' + new Date().getTime() + '.xlsx',
+          path: '../API/pdf',
+          defaultSheetName: 'worksheet'
+        }
+        mongoXlsx.mongoData2Xlsx(data, model, options, function (err, data) {
+          if (!err) { console.log('File saved at:', data.fullPath) } else console.log(err)
+        })
+      })
+    } catch (error) {
+      ErrorHandler.sendError(res, error)
+    }
+  }
+
   //* *****************************************Showing Specific Category&******************/
   static async showOneCategory (req, res) {
     try {
-      let id = req.body.id
+      let id = req.params.id
       // eslint-disable-next-line no-unused-vars
       let err
 

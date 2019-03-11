@@ -67,7 +67,7 @@ class ProductController {
   //* *******************************************Getting one Product****************************/
   static async showOneProduct (req, res) {
     try {
-      let id = req.body.id
+      let id = req.params.id
       // await Category.findById(id,(err,data)=>{
       Product.aggregate(
         [

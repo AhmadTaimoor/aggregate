@@ -13,9 +13,11 @@ router.put('/product/update/:id', ProductController.updateProduct)
 
 /* CATEGORY */
 router.post('/category', CategoryController.addCategory)
-router.get('/categories/export', CategoryController.showCategory)
 router.get('/category/:id', CategoryController.showOneCategory)
 router.get('/category/delete/:id', CategoryController.deleteCategory)
 router.put('/category/update/:id', CategoryController.updateCategory)
+router.get('/categories/export', CategoryController.getpdf)
+router.get('/categories/export/export-csv', CategoryController.getCsvdata)
+router.get('/categories/export/export-xslx', CategoryController.getXslxdata)
 
 module.exports = router
