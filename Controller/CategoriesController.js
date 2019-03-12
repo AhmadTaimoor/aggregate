@@ -9,7 +9,7 @@ const json2csv = require('json2csv').parse
 var pdf = require('../utils/pdf')
 var ejs = require('../utils/ejs')
 const { fs } = require('file-system')
-const { mongoXlsx } = require('mongo-xlsx')
+var mongoXlsx = require('mongo-xlsx')
 
 class CategoryController {
   /**

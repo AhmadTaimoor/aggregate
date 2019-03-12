@@ -1,7 +1,5 @@
 'use strict'
 //* **********************imported Modules********************************************
-// Error.stackTraceLimit = Infinity
-// Error.prepareStackTrace = 0
 var express = require('express')
 var path = require('path')
 var api = require('../API/Route/api')
