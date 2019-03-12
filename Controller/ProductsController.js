@@ -4,7 +4,6 @@
 const { Product } = require('../Schema/products')
 const { Response } = require('../utils/response')
 const { ErrorHandler } = require('../utils/errorhandler')
-// const {Category}= require('../Schema/categories')
 const mongoose = require('mongoose')
 class ProductController {
   /**
@@ -67,8 +66,7 @@ class ProductController {
   //* *******************************************Getting one Product****************************/
   static async showOneProduct (req, res) {
     try {
-      let id = req.params.id
-      // await Category.findById(id,(err,data)=>{
+      let id = req.body.id
       Product.aggregate(
         [
           {
@@ -93,7 +91,12 @@ class ProductController {
                             as: 'ParentCategory'
                           }
           },
-          { $unwind: '$ParentCategory' }
+          { $unwind: '$ParentCategory' },
+          {
+            $project: {
+              '_id': 1, 'name': 1, 'price': 1, 'quantity': 1, 'Category': { '_id': 1, 'name': 1 }, 'ParentCategory': { '_id': 1, 'name': 1 }
+            }
+          }
         ]).exec((err, data) => {
         console.log(id)
         if (err) throw err

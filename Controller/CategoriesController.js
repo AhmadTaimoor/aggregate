@@ -4,11 +4,11 @@
 const { Category } = require('../Schema/categories')
 const { Response } = require('../utils/response')
 const { ErrorHandler } = require('../utils/errorhandler')
-const { mongoose } = require('mongoose')
-const { Json2csvParser } = require('json2csv').Parser
-const { ejs } = require('../utils/ejs')
-const { pdf } = require('../utils/pdf')
-const { fs } = require('fs')
+const mongoose = require('mongoose')
+const json2csv = require('json2csv').parse
+var pdf = require('../utils/pdf')
+var ejs = require('../utils/ejs')
+const { fs } = require('file-system')
 const { mongoXlsx } = require('mongo-xlsx')
 
 class CategoryController {
@@ -55,7 +55,7 @@ class CategoryController {
       await Category.find((_err, data) =>
         ejs.toHTML('./Views/view_Category.ejs', { data: data }).then(function (html) {
           var options = { format: 'Letter' }
-          var output = './pdf/' + 'Category' + '.pdf'
+          var output = './pdf/Category_pdf_' + new Date().getTime() + '.pdf'
           pdf.toPDF(html, options, output).then(function (response) {
             console.log('PDF file successfully written')
             console.log(response)
@@ -72,15 +72,13 @@ class CategoryController {
   static async getCsvdata (req, res) {
     try {
       await Category.find((_err, data) => {
-        var fieldNames = ['_id', 'name', 'ParentCategoryId']
-        const json2csvParser = new Json2csvParser({ fieldNames, unwind: 'data' })
+        var fields = ['_id', 'name', 'ParentCategoryId']
+        const opts = { fields }
+        const csv = json2csv(data, opts)
         var resp = './pdf/Category_csv_' + new Date().getTime() + '.csv'
-        const csv = json2csvParser.parse({ data })
-        fs.writeFile(resp, csv, (err) => {
-          if (!err) {
-            console.log('written successfully')
-            console.log('FilePath :' + resp)
-          } else { console.log(err) }
+        fs.writeFile(resp, csv, () => {
+          console.log('written successfully')
+          console.log('FilePath :' + resp)
         })
       })
     } catch (error) {
@@ -99,8 +97,9 @@ class CategoryController {
           path: '../API/pdf',
           defaultSheetName: 'worksheet'
         }
+        // eslint-disable-next-line handle-callback-err
         mongoXlsx.mongoData2Xlsx(data, model, options, function (err, data) {
-          if (!err) { console.log('File saved at:', data.fullPath) } else console.log(err)
+          console.log('File saved at:', data.fullPath)
         })
       })
     } catch (error) {
@@ -111,17 +110,13 @@ class CategoryController {
   //* *****************************************Showing Specific Category&******************/
   static async showOneCategory (req, res) {
     try {
-      let id = req.params.id
-      // eslint-disable-next-line no-unused-vars
-      let err
+      let id = req.body.id
 
       let data = await Category.aggregate(
         [
           {
             $match:
-                    {
-                      _id: mongoose.Types.ObjectId(id)
-                    }
+          { _id: mongoose.Types.ObjectId(id) }
           },
           {
             $lookup:
@@ -137,6 +132,11 @@ class CategoryController {
                     {
                       ParentCategoryId: null
                     }
+          },
+          {
+            $project: {
+              '_id': 1, 'name': 1, 'parentCategory': { '_id': 1, 'name': 1 }
+            }
           }
         ])
       return new Response(res, 'Category is shown', { Category: data })
@@ -147,7 +147,7 @@ class CategoryController {
   // //**************************************Deleting Product*****************************************/
   // /**
   //      * API | GET
-  //      * Delete product from database
+  //      * Delete Category from database
   //      * @example {s
   //         *      name: String
   //         *      cat_des: String
@@ -170,7 +170,7 @@ class CategoryController {
   // //****************************************Updating Category****************************************/
   // /**
   //      * API | PUT
-  //      * update product into database
+  //      * update Category into database
   //      * @example {
   //         *      name: String
   //         *      cat_des :String

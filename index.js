@@ -1,9 +1,10 @@
 'use strict'
 //* **********************imported Modules********************************************
-Error.stackTraceLimit = Infinity
+// Error.stackTraceLimit = Infinity
+// Error.prepareStackTrace = 0
 var express = require('express')
-var api = require('./Route/api')
 var path = require('path')
+var api = require('../API/Route/api')
 // var mongoose = require('mongoose');
 var config = require('./config.json')
 var app = express()
