@@ -2,7 +2,7 @@
 //* **********************imported Modules********************************************
 var express = require('express')
 var path = require('path')
-var api = require('../API/Route/api')
+var api = require('./Route/api')
 // var mongoose = require('mongoose');
 var config = require('./config.json')
 var app = express()
@@ -17,6 +17,6 @@ app.listen(config.PORT, function () {
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
+//app.use(express.urlencoded({ extended: false }))
 //* ***********************Routing********************************************
 app.use('', api)

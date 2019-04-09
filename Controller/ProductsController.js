@@ -1,5 +1,3 @@
-/* eslint-disable no-throw-literal */
-/* eslint-disable no-console */
 'use strict'
 const { Product } = require('../Schema/products')
 const { Response } = require('../utils/response')
@@ -29,6 +27,7 @@ class ProductController {
       const CategoryId = req.body.CategoryId
 
       if (name == null || price == null) {
+        // eslint-disable-next-line no-throw-literal
         throw { code: 400, message: 'Name/Price is required' }
       }
       const product = new Product({ name: name, price: price, quantity: quantity, CategoryId: CategoryId })
@@ -81,7 +80,7 @@ class ProductController {
                             as: 'Category'
                           }
           },
-          { $unwind: '$Category' },
+      //  { $unwind: '$Category' },
           {
             $lookup:
                           {
@@ -91,14 +90,13 @@ class ProductController {
                             as: 'ParentCategory'
                           }
           },
-          { $unwind: '$ParentCategory' },
+         // { $unwind: '$ParentCategory' },
           {
             $project: {
-              '_id': 1, 'name': 1, 'price': 1, 'quantity': 1, 'Category': { '_id': 1, 'name': 1 }, 'ParentCategory': { '_id': 1, 'name': 1 }
+              '_id': 1, 'name': 1, 'price': 1, 'quantity': 1, 'Category': { '_id': 1, 'name': 1 } , 'ParentCategory': { '_id': 1, 'name': 1 }
             }
           }
         ]).exec((err, data) => {
-        console.log(id)
         if (err) throw err
         return new Response(res, 'Product is shown', { Product: data })
       })

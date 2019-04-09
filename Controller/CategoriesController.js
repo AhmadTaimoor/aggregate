@@ -10,7 +10,6 @@ var pdf = require('../utils/pdf')
 var ejs = require('../utils/ejs')
 const { fs } = require('file-system')
 var mongoXlsx = require('mongo-xlsx')
-
 class CategoryController {
   /**
      * API | POST
