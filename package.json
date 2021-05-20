@@ -15,7 +15,7 @@
     "file-system": "^2.2.2",
     "file-system-cache": "^1.0.5",
     "fs": "0.0.1-security",
-    "html-pdf": "^2.2.0",
+    "html-pdf": "^3.0.1",
     "json2csv": "^4.3.5",
     "mongo-xlsx": "^1.0.12",
     "mongoose": "^5.4.16",
